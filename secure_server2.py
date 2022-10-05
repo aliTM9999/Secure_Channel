@@ -10,6 +10,21 @@ s.listen()
 
 print("Server running, waiting for connections")
 
+password = input("Enter password: ")
+
+concatenatedKeyToSend = password+"From client to server"
+concatenatedKeyToRec = password+"From server to client"
+concatenatedKeyToSendAuth = password+"Auth client to server"
+concatenatedKeyToRecAuth = password+"Auth server to client"
+
+keyToSend = hashlib.sha256(concatenatedKeyToSend.encode())
+keyToRec = hashlib.sha256(concatenatedKeyToSend.encode())
+keyToSendAuth = hashlib.sha256(concatenatedKeyToSendAuth.encode())
+keyToRecAuth = hashlib.sha256(concatenatedKeyToRecAuth.encode())
+
+mesCount = 0
+
+
 connections = []
 names = []
 
@@ -28,11 +43,15 @@ def receiveData():
 
 
 def broadcast(msg, sender):
+
+    mesCount +=1
     
     for connection in connections:
 
 
         if(connection != sender):
+
+            #mac to be written here
 
             connection.send(msg.encode('utf-8'))
 
