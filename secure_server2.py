@@ -1,6 +1,7 @@
 import socket
 import threading
 import hashlib
+import time
 
 
 s = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
@@ -22,14 +23,15 @@ keyToRec = hashlib.sha256(concatenatedKeyToSend.encode())
 keyToSendAuth = hashlib.sha256(concatenatedKeyToSendAuth.encode())
 keyToRecAuth = hashlib.sha256(concatenatedKeyToRecAuth.encode())
 
-mesCount = 0
+
+
 
 
 connections = []
 names = []
 
 def receiveData():
-    
+    global mesCount
     while True:
         connection, addr = s.accept()
         print(str(addr)+" has connected to chatroom.")
@@ -43,8 +45,9 @@ def receiveData():
 
 
 def broadcast(msg, sender):
-
-    mesCount +=1
+    
+    #have the message counter be the time
+    mesCounter = time.time()
     
     for connection in connections:
 
@@ -52,6 +55,8 @@ def broadcast(msg, sender):
         if(connection != sender):
 
             #mac to be written here
+
+            mac= hashlib.sha256(msg)
 
             connection.send(msg.encode('utf-8'))
 
