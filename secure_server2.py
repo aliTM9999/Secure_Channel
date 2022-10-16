@@ -39,28 +39,26 @@ def receiveData():
         connections.append(connection)
         name = connection.recv(1024).decode('utf-8')
         names.append(name)
-        broadcast("{} has joined the room".format(name),connection)
+        
+        messageToBroadCast = "{} has joined the room".format(name)
+        mac= hashlib.sha256(messageToBroadCast.encode())
+
+        toEncrypt = mac.hexdigest() + messageToBroadCast
+        broadcast(toEncrypt,connection)
         thr = threading.Thread(target=handle, args=(connection,))
         thr.start()
 
 
 def broadcast(msg, sender):
     
-    #have the message counter be the time
-    mesCounter = time.time()
-    
     for connection in connections:
 
 
         if(connection != sender):
 
-            #mac to be written here
-
-            mac= hashlib.sha256(msg)
-
             connection.send(msg.encode('utf-8'))
 
-    
+  
 
 
 def handle(connection):

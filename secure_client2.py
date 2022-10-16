@@ -29,8 +29,13 @@ def receiveData():
         try:
             
             message = s.recv(1024).decode('utf-8')
-           
-            print(message)
+
+            mac = message[0:64]
+            if(mac != hashlib.sha256(message[64:].encode()).hexdigest()):
+                print("MACs DO NOT MATCH: " + mac + " vs "+hashlib.sha256(message[64:].encode()).hexdigest())
+            else:
+
+                print(message[64:])
         except:
             # Close Connection When Error
             print("An error occured!")
@@ -38,9 +43,15 @@ def receiveData():
             break
 
 def sendData():
+    #have the message counter be the time
+    mesCounter = time.time()
     while True:
         msg = '{}> {}'.format(name, input(''))
-        s.send(msg.encode('utf-8'))
+        mac= hashlib.sha256(msg.encode())
+
+        toEncrypt = mac.hexdigest() + msg
+        
+        s.send(toEncrypt.encode('utf-8'))
 
 
 rec_thread = threading.Thread(target=receiveData)
