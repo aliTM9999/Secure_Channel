@@ -8,10 +8,8 @@ s = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
 
 s.bind(("127.0.0.1", 12345))
 s.listen()
-
-print("Server running, waiting for connections")
-
 password = input("Enter password: ")
+print("Server running, waiting for connections")
 
 concatenatedKeyToSend = password+"From client to server"
 concatenatedKeyToRec = password+"From server to client"
