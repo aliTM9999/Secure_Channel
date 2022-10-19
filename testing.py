@@ -9,13 +9,15 @@ from Crypto.Random import get_random_bytes
 
 #hashing
 mac= hashlib.sha256("Message".encode())
+time1= time.time()
+print(time1)
 
-toEncrypt = mac.hexdigest() + "Message"
+toEncrypt = mac.hexdigest() + str(time1) + "Message"
 
 print(mac.hexdigest())
 print(toEncrypt[0:64])
 
-print(toEncrypt[64:])
+print(toEncrypt[64:82])
 
 #encrypting
 #salt = b'\x15\xb3@\x90\x14\xbdD\xe3\xc8P\xd8\xab\x90T\x0b\xf30\x8f\x90\xc5\x0b\xb3\xf0[\xdbqZ\x06\xcf\xb5\xa4Y'
@@ -33,3 +35,4 @@ print(ciphertext)
 cipher2 = AES.new(key, AES.MODE_CBC, cipher.iv)
 plaintext =unpad(cipher2.decrypt(ciphertext), AES.block_size)
 print(plaintext.decode())
+
