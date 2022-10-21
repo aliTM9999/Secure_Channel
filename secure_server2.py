@@ -2,15 +2,16 @@ import socket
 import threading
 import hashlib
 import time
-from Crypto.Util.Padding import pad, unpad
 
 
 s = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
 
 s.bind(("127.0.0.1", 12345))
 s.listen()
-password = input("Enter password: ")
+
 print("Server running, waiting for connections")
+
+password = input("Enter password: ")
 
 concatenatedKeyToSend = password+"From client to server"
 concatenatedKeyToRec = password+"From server to client"
@@ -41,9 +42,8 @@ def receiveData():
         
         messageToBroadCast = "{} has joined the room".format(name)
         mac= hashlib.sha256(messageToBroadCast.encode())
-        curTime = time.time()
 
-        toEncrypt = mac.hexdigest() + str(curTime) +messageToBroadCast
+        toEncrypt = mac.hexdigest() + messageToBroadCast
         broadcast(toEncrypt,connection)
         thr = threading.Thread(target=handle, args=(connection,))
         thr.start()

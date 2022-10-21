@@ -2,7 +2,6 @@ import socket
 import threading
 import hashlib
 import time
-from Crypto.Util.Padding import pad, unpad
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
@@ -26,20 +25,17 @@ name = input("Enter a username: ")
 
 def receiveData():
     s.send(name.encode('utf-8'))
-    previousTime=0
     while True:
         try:
-            message = s.recv(1024).decode('utf-8')
             
-            mac = message[0:64]
-            if(mac != hashlib.sha256(message[82:].encode()).hexdigest()):
-                print("MACs DO NOT MATCH: " + mac + " vs "+hashlib.sha256(message[82:].encode()).hexdigest())
-            elif(previousTime>=float(message[64:82])):
-                print("AUTHENTICATION TIME INCORRECT: previous time is " + str(previousTime) + " but current message time is " + message[64:82])
-            else:
-                print(message[82:])
+            message = s.recv(1024).decode('utf-8')
 
-            previousTime=float(message[64:82])
+            mac = message[0:64]
+            if(mac != hashlib.sha256(message[64:].encode()).hexdigest()):
+                print("MACs DO NOT MATCH: " + mac + " vs "+hashlib.sha256(message[64:].encode()).hexdigest())
+            else:
+
+                print(message[64:])
         except:
             # Close Connection When Error
             print("An error occured!")
@@ -47,14 +43,13 @@ def receiveData():
             break
 
 def sendData():
-    
+    #have the message counter be the time
+    mesCounter = time.time()
     while True:
         msg = '{}> {}'.format(name, input(''))
         mac= hashlib.sha256(msg.encode())
-        
-        #have the message counter be the time
-        mesCounter = time.time()
-        toEncrypt = mac.hexdigest() + str(mesCounter) + msg
+
+        toEncrypt = mac.hexdigest() + msg
         
         s.send(toEncrypt.encode('utf-8'))
 
