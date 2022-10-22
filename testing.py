@@ -36,3 +36,5 @@ cipher2 = AES.new(key, AES.MODE_CBC, cipher.iv)
 plaintext =unpad(cipher2.decrypt(ciphertext), AES.block_size)
 print(plaintext.decode())
 
+while(True):
+    print(time.time())

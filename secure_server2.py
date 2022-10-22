@@ -40,7 +40,7 @@ def receiveData():
         mac= hashlib.sha256(messageToBroadCast.encode())
         timecounter = time.time()
         
-        toEncrypt = mac.hexdigest() + messageToBroadCast + str(timecounter)
+        toEncrypt = mac.hexdigest() + messageToBroadCast + str(timecounter).ljust(18)
         broadcast(toEncrypt,connection)
         thr = threading.Thread(target=handle, args=(connection,))
         thr.start()

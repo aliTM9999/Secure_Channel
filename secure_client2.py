@@ -55,7 +55,7 @@ def sendData():
             msg = '{}> {}'.format(name, typed) 
             mac= hashlib.sha256(msg.encode())
 
-            toEncrypt = mac.hexdigest() + msg + str(mesCounter)
+            toEncrypt = mac.hexdigest() + msg + str(mesCounter).ljust(18)
         
             s.send(toEncrypt.encode('utf-8'))
 
