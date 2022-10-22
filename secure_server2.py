@@ -38,8 +38,9 @@ def receiveData():
         
         messageToBroadCast = "{} has joined the room".format(name)
         mac= hashlib.sha256(messageToBroadCast.encode())
-
-        toEncrypt = mac.hexdigest() + messageToBroadCast
+        timecounter = time.time()
+        
+        toEncrypt = mac.hexdigest() + messageToBroadCast + str(timecounter)
         broadcast(toEncrypt,connection)
         thr = threading.Thread(target=handle, args=(connection,))
         thr.start()

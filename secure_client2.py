@@ -31,8 +31,8 @@ def receiveData():
             message = s.recv(1024).decode('utf-8')
 
             mac = message[0:64]
-            if(mac != hashlib.sha256(message[64:].encode()).hexdigest()):
-                print("MACs DO NOT MATCH: " + mac + " vs "+hashlib.sha256(message[64:].encode()).hexdigest())
+            if(mac != hashlib.sha256(message[64:-18].encode()).hexdigest()):
+                print("MACs DO NOT MATCH: " + mac + " vs "+hashlib.sha256(message[64:-18].encode()).hexdigest())
             else:
 
                 print(message[64:])
@@ -43,15 +43,19 @@ def receiveData():
             break
 
 def sendData():
-    #have the message counter be the time
-    mesCounter = time.time()
+    
     while True:
         typed = input('')
         if( typed != ''):
+
+            #have the message counter be the time
+            mesCounter = time.time()
+
+            
             msg = '{}> {}'.format(name, typed) 
             mac= hashlib.sha256(msg.encode())
 
-            toEncrypt = mac.hexdigest() + msg
+            toEncrypt = mac.hexdigest() + msg + str(mesCounter)
         
             s.send(toEncrypt.encode('utf-8'))
 
