@@ -24,6 +24,8 @@ keyToRecAuth = hashlib.sha256(concatenatedKeyToRecAuth.encode())
 name = input("Enter a username: ")
 
 def receiveData():
+
+    
     s.send(name.encode('utf-8'))
     while True:
         try:
