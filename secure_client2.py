@@ -4,10 +4,10 @@ import hashlib
 import time
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-
+password = input("Enter password: ")
 s.connect(("127.0.0.1",12345))
 
-password = input("Enter password: ")
+
 
 concatenatedKeyToSend = password+"From client to server"
 concatenatedKeyToRec = password+"From server to client"
@@ -46,12 +46,14 @@ def sendData():
     #have the message counter be the time
     mesCounter = time.time()
     while True:
-        msg = '{}> {}'.format(name, input(''))
-        mac= hashlib.sha256(msg.encode())
+        typed = input('')
+        if( typed != ''):
+            msg = '{}> {}'.format(name, typed) 
+            mac= hashlib.sha256(msg.encode())
 
-        toEncrypt = mac.hexdigest() + msg
+            toEncrypt = mac.hexdigest() + msg
         
-        s.send(toEncrypt.encode('utf-8'))
+            s.send(toEncrypt.encode('utf-8'))
 
 
 rec_thread = threading.Thread(target=receiveData)

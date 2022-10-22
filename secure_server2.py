@@ -5,13 +5,13 @@ import time
 
 
 s = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
-
+password = input("Enter password: ")
 s.bind(("127.0.0.1", 12345))
 s.listen()
 
 print("Server running, waiting for connections")
 
-password = input("Enter password: ")
+
 
 concatenatedKeyToSend = password+"From client to server"
 concatenatedKeyToRec = password+"From server to client"
@@ -22,10 +22,6 @@ keyToSend = hashlib.sha256(concatenatedKeyToSend.encode())
 keyToRec = hashlib.sha256(concatenatedKeyToSend.encode())
 keyToSendAuth = hashlib.sha256(concatenatedKeyToSendAuth.encode())
 keyToRecAuth = hashlib.sha256(concatenatedKeyToRecAuth.encode())
-
-
-
-
 
 connections = []
 names = []
@@ -73,7 +69,10 @@ def handle(connection):
             connection.close()
             name = names[i]
             stringToSend = name + " has left the room"
-            broadcast(stringToSend,connection)
+
+            mac= hashlib.sha256(stringToSend.encode())
+            toEncrypt = mac.hexdigest() + stringToSend
+            broadcast(toEncrypt,connection)
             names.remove(name)
 
 receiveData()
