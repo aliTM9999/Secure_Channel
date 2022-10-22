@@ -25,7 +25,7 @@ name = input("Enter a username: ")
 
 def receiveData():
 
-    
+
     s.send(name.encode('utf-8'))
     while True:
         try:
@@ -37,7 +37,7 @@ def receiveData():
                 print("MACs DO NOT MATCH: " + mac + " vs "+hashlib.sha256(message[64:-18].encode()).hexdigest())
             else:
 
-                print(message[64:])
+                print(message[64:-18])
         except:
             # Close Connection When Error
             print("An error occured!")
