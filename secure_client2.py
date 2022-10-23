@@ -27,8 +27,10 @@ def receiveData():
 
 
     s.send(name.encode('utf-8'))
+
+    previousTime = 0.00000000
     while True:
-        try:
+        #try:
             
             message = s.recv(1024).decode('utf-8')
 
@@ -36,15 +38,19 @@ def receiveData():
             if(mac != hashlib.sha256(message[64:-18].encode()).hexdigest()):
                 print("MACs DO NOT MATCH: " + mac + " vs "+hashlib.sha256(message[64:-18].encode()).hexdigest())
 
-            
+            elif(previousTime>= float(message[-18:])):
+                print("TIME PROBLEM:   previous time is "+str(previousTime)+" vs   message time "+message[-18:])
             else:
 
                 print(message[64:-18])
-        except:
+                previousTime=float(message[-18:])
+                
+                
+        #except:
             # Close Connection When Error
-            print("An error occured!")
-            s.close()
-            break
+            #print("An error occured!")
+            #s.close()
+            #break
 
 def sendData():
     
@@ -54,8 +60,7 @@ def sendData():
 
             #have the message counter be the time
             mesCounter = time.time()
-
-            
+                        
             msg = '{}> {}'.format(name, typed) 
             mac= hashlib.sha256(msg.encode())
 

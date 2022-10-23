@@ -71,8 +71,10 @@ def handle(connection):
             name = names[i]
             stringToSend = name + " has left the room"
 
+            timecounter = time.time()
+
             mac= hashlib.sha256(stringToSend.encode())
-            toEncrypt = mac.hexdigest() + stringToSend
+            toEncrypt = mac.hexdigest() + stringToSend+ str(timecounter).ljust(18)
             broadcast(toEncrypt,connection)
             names.remove(name)
 

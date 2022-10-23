@@ -36,5 +36,10 @@ cipher2 = AES.new(key, AES.MODE_CBC, cipher.iv)
 plaintext =unpad(cipher2.decrypt(ciphertext), AES.block_size)
 print(plaintext.decode())
 
-while(True):
-    print(time.time())
+
+print(time.time())
+
+message = "2f77668a9dfbf8d5848b9eeb4a7145ca94c6ed9236e4a773f6dcafa5132b2f91HEYITSMETABARNAK1666487655.3067904"
+
+if(1666489999.00000> float(message[-18:])):
+    print("error")
