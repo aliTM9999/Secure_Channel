@@ -35,6 +35,8 @@ def receiveData():
             mac = message[0:64]
             if(mac != hashlib.sha256(message[64:-18].encode()).hexdigest()):
                 print("MACs DO NOT MATCH: " + mac + " vs "+hashlib.sha256(message[64:-18].encode()).hexdigest())
+
+            
             else:
 
                 print(message[64:-18])
