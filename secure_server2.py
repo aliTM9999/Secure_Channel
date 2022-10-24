@@ -2,10 +2,13 @@ import socket
 import threading
 import hashlib
 import time
+from Crypto.Cipher import AES
+from Crypto.Util.Padding import pad, unpad
 
 
 s = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
 password = hashlib.sha256(input("Enter password: ").encode()).hexdigest()
+encryptor = AES.new(password[:32].encode(), AES.MODE_CBC)
 s.bind(("127.0.0.1", 12345))
 s.listen()
 
@@ -31,7 +34,7 @@ def receiveData():
         timecounter = time.time()
         
         toEncrypt = newmac + messageToBroadCast + str(timecounter).ljust(18)
-        broadcast(toEncrypt,connection)
+        broadcast(encrypt(toEncrypt),connection)
         thr = threading.Thread(target=handle, args=(connection,))
         thr.start()
 
@@ -67,11 +70,18 @@ def handle(connection):
             newmac = xor_on_strings(mac.hexdigest(),password)
 
             toEncrypt = newmac + stringToSend+ str(timecounter).ljust(18)
-            broadcast(toEncrypt,connection)
+            broadcast(encrypt(toEncrypt),connection)
             names.remove(name)
 
 def xor_on_strings(string1, string2):
     return "".join(chr(ord(x)^ord(y)) for x,y in zip(string1,string2))
+
+
+def encrypt(str1):
+
+    toEncrypt = bytes(str1, 'utf-8')
+    ciphertext = encryptor.encrypt(pad(toEncrypt,16))
+    return str(ciphertext)
 
 
 receiveData()

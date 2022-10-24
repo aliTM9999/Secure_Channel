@@ -2,9 +2,12 @@ import socket
 import threading
 import hashlib
 import time
+from Crypto.Cipher import AES
+from Crypto.Util.Padding import pad, unpad
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 password = hashlib.sha256(input("Enter password: ").encode()).hexdigest()
+encryptor = AES.new(password[:32].encode(), AES.MODE_CBC)
 s.connect(("127.0.0.1",12345))
 
 
@@ -17,13 +20,15 @@ def receiveData():
 
     previousTime = 0.00000000
     while True:
-        try:
+        #try:
             
-            message = s.recv(1024).decode('utf-8')
+            messageReceived = s.recv(1024).decode('utf-8')
+            
+            message = decrypt(messageReceived)
 
             mac = message[0:64]
             computedMac = hashlib.sha256(message[64:-18].encode()).hexdigest()
-            newmac = xor_on_strings(computedMac,password)#####################################################################
+            newmac = xor_on_strings(computedMac,password)
             if(mac != newmac):
                 print("MACs DO NOT MATCH: " + mac + " vs "+newmac)
 
@@ -35,11 +40,11 @@ def receiveData():
                 previousTime=float(message[-18:])
                 
                 
-        except:
+        #except:
             #Close Connection When Error
-            print("An error occured!")
-            s.close()
-            break
+           #print("An error occured!")
+            #s.close()
+           #break
 
 def sendData():
     
@@ -58,11 +63,27 @@ def sendData():
             newmac = xor_on_strings(mac.hexdigest(),password)
 
             toEncrypt = newmac + msg + str(mesCounter).ljust(18)
-        
-            s.send(toEncrypt.encode('utf-8'))
+
+
+            s.send(encrypt(toEncrypt).encode('utf-8'))
 
 def xor_on_strings(string1, string2):
     return "".join(chr(ord(x)^ord(y)) for x,y in zip(string1,string2))
+
+def encrypt(str1):
+
+    toEncrypt = bytes(str1, 'utf-8')
+    ciphertext = encryptor.encrypt(pad(toEncrypt,16))
+    return str(ciphertext)
+
+def decrypt(str1):
+
+    decryptor = AES.new(password[:32].encode(), AES.MODE_CBC, encryptor.iv)
+    plaintext = unpad(decryptor.decrypt(str1.encode()), 16)
+    return plaintext.decode()
+
+
+
 
 
 rec_thread = threading.Thread(target=receiveData)

@@ -6,7 +6,8 @@ from Crypto.Cipher import AES
 from Crypto.Util.Padding import pad, unpad
 from Crypto.Protocol.KDF import PBKDF2
 from Crypto.Random import get_random_bytes
-
+def xor_on_strings(string1, string2):
+    return "".join(chr(ord(x)^ord(y)) for x,y in zip(string1,string2))
 #hashing
 mac= hashlib.sha256("Message".encode())
 time1= time.time()
@@ -24,16 +25,25 @@ print(toEncrypt[64:82])
 salt = get_random_bytes(32)
 key = PBKDF2("password",salt, dkLen=32)
 cipher = AES.new(key, AES.MODE_CBC)
-data = b'My message123456321321'
+data = b'ali has joined the room'
 
-ciphertext= cipher.encrypt(pad(data, AES.block_size))
-print(ciphertext)
+
+password = "dad"
+
+messageToBroadCast = "{} has joined the room".format('ali')
+mac= hashlib.sha256(messageToBroadCast.encode())
+#newmac = xor_on_strings(mac.hexdigest(),password)
+timecounter = time.time()
+        
+toEncrypt = mac.hexdigest() + messageToBroadCast + str(timecounter).ljust(18)
+ciphertext= cipher.encrypt(pad(toEncrypt.encode(), 16))
+print("cipher "+str(ciphertext))
 
 
 #decrypting
 
 cipher2 = AES.new(key, AES.MODE_CBC, cipher.iv)
-plaintext =unpad(cipher2.decrypt(ciphertext), AES.block_size)
+plaintext =unpad(cipher2.decrypt(ciphertext), 16)
 print(plaintext.decode())
 
 
@@ -43,3 +53,7 @@ message = "2f77668a9dfbf8d5848b9eeb4a7145ca94c6ed9236e4a773f6dcafa5132b2f91HEYIT
 
 if(1666489999.00000> float(message[-18:])):
     print("error")
+
+
+
+
