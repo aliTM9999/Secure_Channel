@@ -5,23 +5,12 @@ import time
 
 
 s = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
-password = input("Enter password: ")
+password = hashlib.sha256(input("Enter password: ").encode()).hexdigest()
 s.bind(("127.0.0.1", 12345))
 s.listen()
 
 print("Server running, waiting for connections")
 
-
-
-concatenatedKeyToSend = password+"From client to server"
-concatenatedKeyToRec = password+"From server to client"
-concatenatedKeyToSendAuth = password+"Auth client to server"
-concatenatedKeyToRecAuth = password+"Auth server to client"
-
-keyToSend = hashlib.sha256(concatenatedKeyToSend.encode())
-keyToRec = hashlib.sha256(concatenatedKeyToSend.encode())
-keyToSendAuth = hashlib.sha256(concatenatedKeyToSendAuth.encode())
-keyToRecAuth = hashlib.sha256(concatenatedKeyToRecAuth.encode())
 
 connections = []
 names = []
@@ -38,9 +27,10 @@ def receiveData():
         
         messageToBroadCast = "{} has joined the room".format(name)
         mac= hashlib.sha256(messageToBroadCast.encode())
+        newmac = xor_on_strings(mac.hexdigest(),password)
         timecounter = time.time()
         
-        toEncrypt = mac.hexdigest() + messageToBroadCast + str(timecounter).ljust(18)
+        toEncrypt = newmac + messageToBroadCast + str(timecounter).ljust(18)
         broadcast(toEncrypt,connection)
         thr = threading.Thread(target=handle, args=(connection,))
         thr.start()
@@ -74,9 +64,15 @@ def handle(connection):
             timecounter = time.time()
 
             mac= hashlib.sha256(stringToSend.encode())
-            toEncrypt = mac.hexdigest() + stringToSend+ str(timecounter).ljust(18)
+            newmac = xor_on_strings(mac.hexdigest(),password)
+
+            toEncrypt = newmac + stringToSend+ str(timecounter).ljust(18)
             broadcast(toEncrypt,connection)
             names.remove(name)
+
+def xor_on_strings(string1, string2):
+    return "".join(chr(ord(x)^ord(y)) for x,y in zip(string1,string2))
+
 
 receiveData()
 
