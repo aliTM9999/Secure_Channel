@@ -39,4 +39,3 @@ w_thread.start()
 
 
 
-#socket code inspired by NeuralNine.org

@@ -57,4 +57,3 @@ def handle(connection):
 receiveData()
 
 
-#socket code inspired by NeuralNine.org
