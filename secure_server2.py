@@ -77,4 +77,3 @@ def xor_on_strings(string1, string2):
 receiveData()
 
 
-#socket code inspired by NeuralNine.org
