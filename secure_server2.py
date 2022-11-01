@@ -87,4 +87,3 @@ def encrypt(str1):
 receiveData()
 
 
-#socket code inspired by NeuralNine.org
